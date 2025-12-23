@@ -8,14 +8,16 @@
     const tabName = 'Sheet1';
 
     // IDs from your Webflow form
-    const formId = 'domain-form';
+    // Webflow automatically prefixes form IDs with "wf-form-"
+    // based on the form name "domain-form".
+    const formId = 'wf-form-domain-form';
     const inputId = 'domain-input';
     const buttonId = 'domain-submit';
 
     // === Code ===
-    const form = document.getElementById(formId);
-    const input = document.getElementById(inputId);
-    const button = document.getElementById(buttonId);
+    let form = document.getElementById(formId);
+    let input = document.getElementById(inputId);
+    let button = document.getElementById(buttonId);
 
     console.log('Domain checker: looking for elements', {
       form: !!form,
@@ -23,11 +25,46 @@
       button: !!button,
     });
 
+    // Fallback: try to auto-detect the form and fields if IDs are not set correctly
     if (!form || !input || !button) {
       console.warn(
-        'Domain checker: form/input/button not found. Check element IDs in Webflow (form: domain-form, input: domain-input, button: domain-submit).'
+        'Domain checker: form/input/button not found by ID. Attempting auto-detect. For best reliability, set IDs in Webflow (form: domain-form, input: domain-input, button: domain-submit).'
       );
-      return;
+
+      // Try to find a form that looks like the domain form
+      form =
+        form ||
+        document.querySelector('form[data-name*="domain" i]') ||
+        document.querySelector('form');
+
+      if (form) {
+        // Try to find a text input that looks like the domain input
+        input =
+          input ||
+          form.querySelector('input[name*="domain" i]') ||
+          form.querySelector('input[type="text"], input[type="email"], input');
+
+        // Try to find the submit button
+        button =
+          button ||
+          form.querySelector('button[type="submit"], input[type="submit"], .w-button');
+      }
+
+      console.log('Domain checker: auto-detected elements', {
+        formDetected: !!form,
+        inputDetected: !!input,
+        buttonDetected: !!button,
+        formElement: form,
+        inputElement: input,
+        buttonElement: button,
+      });
+
+      if (!form || !input || !button) {
+        console.warn(
+          'Domain checker: auto-detect also failed. Please ensure the domain form is on this page and that element IDs are set correctly in Webflow.'
+        );
+        return;
+      }
     }
 
     let cache = null;
