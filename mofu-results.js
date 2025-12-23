@@ -10,18 +10,21 @@
     const companyLogoId = 'company-logo'; // ID for <img> element showing logo
 
     // === Code ===
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const domain = urlParams.get('domain');
-    const company = urlParams.get('company');
+    // Get domain and company from sessionStorage (set by form page)
+    const domain = sessionStorage.getItem('domainCheck_domain');
+    const company = sessionStorage.getItem('domainCheck_company');
 
-    // If no domain parameter, redirect back or show error
+    // If no domain in sessionStorage, redirect back or show error
     if (!domain) {
-      console.warn('No domain parameter found in URL');
+      console.warn('No domain data found in sessionStorage');
       // Optionally redirect back to form page
       // window.location.href = '/';
       return;
     }
+
+    // Clear sessionStorage after reading (optional - keeps it clean)
+    // sessionStorage.removeItem('domainCheck_domain');
+    // sessionStorage.removeItem('domainCheck_company');
 
     // Get elements
     const companyNameEl = document.getElementById(companyNameId);

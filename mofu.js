@@ -102,12 +102,11 @@
         const map = await loadSheet();
         if (map.has(domain)) {
           const company = map.get(domain);
-          // Redirect to results page with domain and company as URL parameters
-          const params = new URLSearchParams({
-            domain: domain,
-            company: company || '',
-          });
-          window.location.href = `${resultsPageUrl}?${params.toString()}`;
+          // Store domain and company in sessionStorage (persists across page navigation)
+          sessionStorage.setItem('domainCheck_domain', domain);
+          sessionStorage.setItem('domainCheck_company', company || '');
+          // Redirect to results page (clean URL, no query strings)
+          window.location.href = resultsPageUrl;
         } else {
           alert('No match found.');
           button.disabled = false;
