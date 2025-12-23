@@ -1,25 +1,35 @@
 // domain-check.js
 (() => {
+  // Wait until the DOM is fully ready (important if this script is loaded in the page head)
+  document.addEventListener('DOMContentLoaded', () => {
     // === Configure these ===
     const apiKey = 'AIzaSyBnk67LXHprS-fmJAQ0Piv8zKZx5fo_rfY';
     const sheetId = '1cUbwtE-ZoyBRLvikceoo_qg0dRrsPnZe28edvOIBaAk';
     const tabName = 'Sheet1';
-  
+
     // IDs from your Webflow form
     const formId = 'domain-form';
     const inputId = 'domain-input';
     const buttonId = 'domain-submit';
-  
+
     // === Code ===
     const form = document.getElementById(formId);
     const input = document.getElementById(inputId);
     const button = document.getElementById(buttonId);
-  
+
+    console.log('Domain checker: looking for elements', {
+      form: !!form,
+      input: !!input,
+      button: !!button,
+    });
+
     if (!form || !input || !button) {
-      console.warn('Domain checker: form/input/button not found. Check IDs.');
+      console.warn(
+        'Domain checker: form/input/button not found. Check element IDs in Webflow (form: domain-form, input: domain-input, button: domain-submit).'
+      );
       return;
     }
-  
+
     let cache = null;
     async function loadSheet() {
       if (cache) return cache;
@@ -38,7 +48,7 @@
       cache = map;
       return map;
     }
-  
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const domain = (input.value || '').trim().toLowerCase();
@@ -46,7 +56,7 @@
         alert('Please enter a domain.');
         return;
       }
-  
+
       button.disabled = true;
       try {
         const map = await loadSheet();
@@ -62,4 +72,5 @@
         button.disabled = false;
       }
     });
-  })();
+  });
+})();
