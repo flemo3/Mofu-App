@@ -14,15 +14,13 @@
     const inputId = 'domain-input';
     const buttonId = 'domain-submit';
 
-    // Logo.dev configuration (for showing company logos)
-    const logoToken = 'pk_QiQEX6EtQH65grYfT4unYQ'; // replace with your actual token if needed
-    const logoImgId = 'company-logo'; // ID of the <img> element in Webflow
+    // Results page configuration
+    const resultsPageUrl = '/results'; // Change this to your results page URL in Webflow
 
     // === Code ===
     let form = document.getElementById(formId);
     let input = document.getElementById(inputId);
     let button = document.getElementById(buttonId);
-    const logoImg = document.getElementById(logoImgId);
 
     console.log('Domain checker: looking for elements', {
       form: !!form,
@@ -99,36 +97,24 @@
         return;
       }
 
-      // Clear / hide logo before each check
-      if (logoImg) {
-        logoImg.style.display = 'none';
-        logoImg.removeAttribute('src');
-        logoImg.setAttribute('alt', '');
-      }
-
       button.disabled = true;
       try {
         const map = await loadSheet();
         if (map.has(domain)) {
           const company = map.get(domain);
-          alert(`Match found! Company: ${company}`);
-
-          // If we have a logo image element, update it to show the logo for the domain
-          if (logoImg) {
-            const logoUrl = `https://img.logo.dev/${encodeURIComponent(
-              domain
-            )}?token=${encodeURIComponent(logoToken)}`;
-            logoImg.setAttribute('src', logoUrl);
-            logoImg.setAttribute('alt', `${company || domain} logo`);
-            logoImg.style.display = 'block';
-          }
+          // Redirect to results page with domain and company as URL parameters
+          const params = new URLSearchParams({
+            domain: domain,
+            company: company || '',
+          });
+          window.location.href = `${resultsPageUrl}?${params.toString()}`;
         } else {
           alert('No match found.');
+          button.disabled = false;
         }
       } catch (err) {
         console.error(err);
         alert('Error checking the sheet. Please try again.');
-      } finally {
         button.disabled = false;
       }
     });
